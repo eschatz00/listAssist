@@ -13,8 +13,8 @@ import './App.css'; // Import CSS
 function App() {
 
   const [message, setMessage] = useState('listAssist'); // Display app name
-  const [groceryItems, setGroceryItems] = useState([]); // Example: Grocery list
-  const [todoItems, setTodoItems] = useState([]); // Example: To-Do list
+  const [foodItems, setFoodItems] = useState([]); // Example: Grocery list
+  const [remindersItems, setRemindersItems] = useState([]); // Example: To-Do list
 
   // Function to add a new item via the backend API
   const addItem = (newItem) => {
@@ -23,10 +23,10 @@ function App() {
       .then((response) => {
         const { item, category } = response.data;
 
-        if (category === 'grocery') {
-          setGroceryItems((prevItems) => [...prevItems, item]);
-        } else if (category === 'todo') {
-          setTodoItems((prevItems) => [...prevItems, item]);
+        if (category === 'food') {
+          setFoodItems((prevItems) => [...prevItems, item]);
+        } else if (category === 'reminders') {
+          setRemindersItems((prevItems) => [...prevItems, item]);
         }
       })
       .catch((error) => {
@@ -39,10 +39,10 @@ function App() {
     axios
       .get('http://127.0.0.1:5000/api/items') // Fetch all items from backend
       .then((response) => {
-        const { grocery, todo } = response.data;
+        const { food, reminders } = response.data;
         // Update the corresponding list based on the category
-        setGroceryItems(grocery); // Set grocery items
-        setTodoItems(todo); // Set todo items
+        setFoodItems(food); // Set grocery items
+        setRemindersItems(reminders); // Set todo items
       })
       .catch((error) => console.error('Error fetching items:', error));
   }, []);
@@ -57,8 +57,8 @@ function App() {
 
        {/* Container for all the lists */}
       <div className="lists-container">
-        <ListView listName="Grocery List" items={groceryItems} />
-        <ListView listName="To-Do List" items={todoItems} />
+        <ListView listName="Grocery List" items={foodItems} />
+        <ListView listName="To-Do List" items={remindersItems} />
       </div>
     </div>
   );

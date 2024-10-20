@@ -6,14 +6,14 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Store categorized lists temporarily
-grocery_items = []
-todo_items = []
+food_items = []
+reminders_items = []
 
 # NLP STUFF
 classifier = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')
 
 def categorize_item(item):
-    labels = ['grocery', 'todo']
+    labels = ['food', 'reminders']
     result = classifier(item, labels)
     category = result['labels'][0]  # Get the most likely category
     return category
@@ -27,10 +27,10 @@ def add_item():
 
     category = categorize_item(item) #NLP categorization
 
-    if category == 'grocery':
-        grocery_items.append(item)
-    elif category == 'todo':
-        todo_items.append(item)
+    if category == 'food':
+        food_items.append(item)
+    elif category == 'reminders':
+        reminders_items.append(item)
 
 
     return jsonify({'item': item, 'category': category}), 201
@@ -38,8 +38,8 @@ def add_item():
 @app.route('/api/items', methods=['GET'])
 def get_items():
     return jsonify({
-        'grocery': grocery_items,
-        'todo': todo_items
+        'food': food_items,
+        'reminders': reminders_items
     }), 200
 
 if __name__ == '__main__':
