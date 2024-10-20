@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  
+from transformers import pipeline
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -8,18 +9,29 @@ CORS(app)  # Enable CORS for all routes
 grocery_items = []
 todo_items = []
 
+# NLP STUFF
+classifier = pipeline('zero-shot-classification', model='facebook/bart-large-mnli')
+
+def categorize_item(item):
+    labels = ['grocery', 'todo']
+    result = classifier(item, labels)
+    category = result['labels'][0]  # Get the most likely category
+    return category
+
+
+#REST API STUFF
 @app.route('/api/add-item', methods=['POST'])
 def add_item():
     data = request.get_json()
     item = data.get('item')
 
-    # Placeholder: Simple categorization logic
-    if 'buy' in item.lower():
+    category = categorize_item(item) #NLP categorization
+
+    if category == 'grocery':
         grocery_items.append(item)
-        category = 'grocery'
-    else:
+    elif category == 'todo':
         todo_items.append(item)
-        category = 'todo'
+
 
     return jsonify({'item': item, 'category': category}), 201
 
