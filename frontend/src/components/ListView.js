@@ -20,9 +20,11 @@ function ListView({ listName, items }) {
       {/* Show items only if isExpanded is true */}
       {isExpanded && (
         <ul className="list-items">
-          {items.map((item, index) => (
-            <li key={index}>{item}</li> // Render each item in a bullet point
-          ))}
+          {items.length > 0 ? (
+            items.map((item, index) => <li key={index}>{item}</li>)
+          ) : (
+            <li>No items yet!</li> // Placeholder if list is empty
+          )}
         </ul>
       )}
     </div>
