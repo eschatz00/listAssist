@@ -13,7 +13,6 @@ import './App.css'; // Import CSS
 function App() {
 
   const [message, setMessage] = useState('listAssist'); // Display app name
-  const [items, setItems] = useState([]);  // All list items
   const [groceryItems, setGroceryItems] = useState([]); // Example: Grocery list
   const [todoItems, setTodoItems] = useState([]); // Example: To-Do list
 
@@ -23,13 +22,11 @@ function App() {
       .post('http://127.0.0.1:5000/api/add-item', { item: newItem }) // Send item to backend
       .then((response) => {
         const { item, category } = response.data;
-        console.log('Item added:', response.data);
 
-        // Update the correct list based on the category returned by the backend
         if (category === 'grocery') {
-          setGroceryItems([...groceryItems, item]);
+          setGroceryItems((prevItems) => [...prevItems, item]);
         } else if (category === 'todo') {
-          setTodoItems([...todoItems, item]);
+          setTodoItems((prevItems) => [...prevItems, item]);
         }
       })
       .catch((error) => {
@@ -43,8 +40,9 @@ function App() {
       .get('http://127.0.0.1:5000/api/items') // Fetch all items from backend
       .then((response) => {
         const { grocery, todo } = response.data;
-        setGroceryItems(grocery);
-        setTodoItems(todo);
+        // Update the corresponding list based on the category
+        setGroceryItems(grocery); // Set grocery items
+        setTodoItems(todo); // Set todo items
       })
       .catch((error) => console.error('Error fetching items:', error));
   }, []);
