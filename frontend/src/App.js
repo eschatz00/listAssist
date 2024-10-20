@@ -7,15 +7,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import InputBox from './components/InputBox'; // Import InputBox js page
+import ListView from './components/ListView'; // Import ListView js page
 import './App.css'; // Import CSS
 
 function App() {
-  // Create a state variable called `message` and a function to update it
-  // Display app name
-  const [message, setMessage] = useState('listAssist');
 
-  // Create a new state to store the list items added by the user
-  const [items, setItems] = useState([]);  // <- New state for list items
+  const [message, setMessage] = useState('listAssist'); // Display app name
+  const [items, setItems] = useState([]);  // All list items
+  const [groceryItems, setGroceryItems] = useState([]); // Example: Grocery list
+  const [todoItems, setTodoItems] = useState([]); // Example: To-Do list
 
   // Run this code once when the component loads (because the [] is empty)
   useEffect(() => {
@@ -34,6 +34,12 @@ function App() {
   // Function to add a new item to the list
   const addItem = (newItem) => {
     setItems([...items, newItem]);  // Add the new item to the state array
+    // Example: Categorize new items (adjust logic as needed)
+    if (newItem.toLowerCase().includes('buy')) {
+      setGroceryItems([...groceryItems, newItem]);
+    } else {
+      setTodoItems([...todoItems, newItem]);
+    }
   };
 
   // Render UI
@@ -44,14 +50,11 @@ function App() {
       {/* Input box for adding new list items */}
       <InputBox onAddItem={addItem} />  {/* Use InputBox and pass addItem */}
 
-      {/* Display the list of items */}
-      <ul>
-        {items.map((item, index) => (
-          <li key={index}>{item}</li> // Render each item
-        ))}
-        
-      </ul>
-
+       {/* Container for all the lists */}
+      <div className="lists-container">
+        <ListView listName="Grocery List" items={groceryItems} />
+        <ListView listName="To-Do List" items={todoItems} />
+      </div>
     </div>
   );
 }
