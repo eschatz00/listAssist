@@ -12,40 +12,64 @@ import './App.css'; // Import CSS
 
 function App() {
 
-  const [message, setMessage] = useState('listAssist'); // Display app name
-  const [foodItems, setFoodItems] = useState([]); // Example: Grocery list
-  const [remindersItems, setRemindersItems] = useState([]); // Example: To-Do list
+  const [message, setMessage] = useState('listAssist');
+  const [lists, setLists] = useState({
+    'Groceries': { label: 'food', items: [] },
+    'To-Do': { label: 'reminders', items: [] }
+  });
+  const [newListName, setNewListName] = useState('');
+  const [newListLabel, setNewListLabel] = useState('');
+  const [showInput, setShowInput] = useState(false);
 
   // Function to add a new item via the backend API
   const addItem = (newItem) => {
     axios
       .post('http://127.0.0.1:5000/api/add-item', { item: newItem }) // Send item to backend
       .then((response) => {
-        const { item, category } = response.data;
-
-        if (category === 'food') {
-          setFoodItems((prevItems) => [...prevItems, item]);
-        } else if (category === 'reminders') {
-          setRemindersItems((prevItems) => [...prevItems, item]);
-        }
+        const { item, listName } = response.data;
+        setLists(prevLists => ({
+          ...prevLists,
+          [listName]: {
+            ...prevLists[listName],
+            items: [...prevLists[listName].items, item]
+          }
+        }));
       })
       .catch((error) => {
         console.error('Error adding item:', error);
       });
   };
 
-  // Optional: Fetch existing items from the backend when the app loads
+  // Fetch existing items from the backend when the app loads
   useEffect(() => {
     axios
       .get('http://127.0.0.1:5000/api/items') // Fetch all items from backend
-      .then((response) => {
-        const { food, reminders } = response.data;
-        // Update the corresponding list based on the category
-        setFoodItems(food); // Set grocery items
-        setRemindersItems(reminders); // Set todo items
-      })
+      .then(response => setLists(response.data))
       .catch((error) => console.error('Error fetching items:', error));
   }, []);
+
+  const handleAddList = () => {
+
+    if (newListName.trim()) {
+  
+      axios
+        .post('http://127.0.0.1:5000/api/add-list', {
+          name: newListName,
+          label: newListName.toLowerCase(),
+        })
+        .then(() => {
+          setLists((prevLists) => ({
+            ...prevLists,
+            [newListName]: { label: newListName.toLowerCase(), items: [] },
+          }));
+
+          setNewListName('');
+          setShowInput(false);
+        })
+        .catch((error) => console.error('Error adding list:', error)); // Error handling
+    } else {
+    }
+  };
 
   // Render UI
   return (
@@ -57,9 +81,36 @@ function App() {
 
        {/* Container for all the lists */}
       <div className="lists-container">
-        <ListView listName="Grocery List" items={foodItems} />
-        <ListView listName="To-Do List" items={remindersItems} />
+        {Object.keys(lists).map((listName) => (
+        <ListView 
+        key={listName} 
+        listName={listName} 
+        items={lists[listName]?.items || []} // Ensure `items` is always an array
+      />
+        ))}
       </div>
+
+      {/* Add List Button */}
+      <div className="add-list-button">
+        <p
+          className="add-list-text"
+          onClick={() => setShowInput(true)}
+        >
+          add list+
+        </p>
+        {showInput && (
+          <div className="new-list-input">
+            <input
+              type="text"
+              placeholder="Enter new list name"
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+            />
+            <button onClick={handleAddList}>Add</button>
+          </div>
+        )}
+      </div>
+      
     </div>
   );
 }

@@ -70,3 +70,39 @@
 }
 
 
+
+
+.add-list-button {
+  text-align: center;
+  margin-top: 20px;
+}
+.add-list-text {
+  color: #4CAF50;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 18px;
+}
+.add-list-name:hover {
+  color: green;
+}
+
+
+
+.new-list-input {
+  margin-top: 10px;
+}
+.new-list-input input {
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.new-list-input button {
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
