@@ -82,6 +82,21 @@ def remove_item():
         return jsonify({'error': 'Item not found'}), 404
 
 
+@app.route('/api/move-item', methods=['POST'])
+def move_item():
+    data = request.get_json()
+    from_list = data.get('fromList')
+    to_list = data.get('toList')
+    item = data.get('item')
+
+    if from_list in lists and to_list in lists and item in lists[from_list]['items']:
+        lists[from_list]['items'].remove(item)
+        lists[to_list]['items'].append(item)
+        return jsonify({'message': f'Item {item} moved from {from_list} to {to_list}'}), 200
+    else:
+        return jsonify({'error': 'Invalid move'}), 400
+
+
 
 @app.route('/api/items', methods=['GET'])
 def get_items():
