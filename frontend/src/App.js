@@ -71,6 +71,25 @@ function App() {
     }
   };
 
+  const removeItem = (listName, item) => {
+  
+    axios
+      .delete('http://127.0.0.1:5000/api/remove-item', {
+        data: { listName, item }, // Send item and list name
+      })
+      .then(() => {
+        setLists((prevLists) => ({
+          ...prevLists,
+          [listName]: {
+            ...prevLists[listName],
+            items: prevLists[listName].items.filter((i) => i !== item),
+          },
+        }));
+      })
+      .catch((error) => console.error('Error removing item:', error));
+  };
+  
+
   // Render UI
   return (
     <div className="App">
@@ -86,6 +105,7 @@ function App() {
         key={listName} 
         listName={listName} 
         items={lists[listName]?.items || []} // Ensure `items` is always an array
+        onRemoveItem={removeItem} //
       />
         ))}
       </div>

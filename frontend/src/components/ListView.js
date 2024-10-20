@@ -1,7 +1,7 @@
 // ListView.js
 import React, { useState } from 'react';
 
-function ListView({ listName, items }) {
+function ListView({ listName, items, onRemoveItem }) {
   // State to keep track of whether the list is expanded or hidden
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -21,7 +21,15 @@ function ListView({ listName, items }) {
       {isExpanded && (
         <ul className="list-items">
           {items.length > 0 ? (
-            items.map((item, index) => <li key={index}>{item}</li>)
+            items.map((item, index) => (
+              <li
+                key={index}
+                className="list-item"
+                onClick={() => onRemoveItem(listName, item)} // Call onRemoveItem
+              >
+                {item}
+              </li>
+            ))
           ) : (
             <li>No items yet!</li> // Placeholder if list is empty
           )}

@@ -69,6 +69,19 @@ def add_list():
         return jsonify({'error': f'List {name} already exists.'}), 400
 
 
+@app.route('/api/remove-item', methods=['DELETE'])
+def remove_item():
+    data = request.get_json()
+    list_name = data.get('listName')
+    item = data.get('item')
+
+    if list_name in lists and item in lists[list_name]['items']:
+        lists[list_name]['items'].remove(item)
+        return jsonify({'message': f'Item {item} removed from {list_name}'}), 200
+    else:
+        return jsonify({'error': 'Item not found'}), 404
+
+
 
 @app.route('/api/items', methods=['GET'])
 def get_items():

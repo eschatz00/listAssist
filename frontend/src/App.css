@@ -107,3 +107,14 @@
   font: 1em sans-serif;
 }
 
+
+
+.list-item {
+  color: black;   
+  cursor: pointer;
+  transition: color 0.3s;  
+}
+.list-item:hover {
+  color: red;  
+}
+
