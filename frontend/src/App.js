@@ -17,30 +17,37 @@ function App() {
   const [groceryItems, setGroceryItems] = useState([]); // Example: Grocery list
   const [todoItems, setTodoItems] = useState([]); // Example: To-Do list
 
-  // Run this code once when the component loads (because the [] is empty)
-  useEffect(() => {
-    // Make a GET request to the backend API.
-    axios.get('http://127.0.0.1:5000/api/data')  // Change the URL if needed ? perhaps?
-      .then(response => {
-        // If the request works, save the message from the response
-        setMessage(response.data.message);
-      })
-      .catch(error => {
-        // If the request fails, print the error in the console
-        console.error(error);
-      });
-  }, []);  
-
-  // Function to add a new item to the list
+  // Function to add a new item via the backend API
   const addItem = (newItem) => {
-    setItems([...items, newItem]);  // Add the new item to the state array
-    // Example: Categorize new items (adjust logic as needed)
-    if (newItem.toLowerCase().includes('buy')) {
-      setGroceryItems([...groceryItems, newItem]);
-    } else {
-      setTodoItems([...todoItems, newItem]);
-    }
+    axios
+      .post('http://127.0.0.1:5000/api/add-item', { item: newItem }) // Send item to backend
+      .then((response) => {
+        const { item, category } = response.data;
+        console.log('Item added:', response.data);
+
+        // Update the correct list based on the category returned by the backend
+        if (category === 'grocery') {
+          setGroceryItems([...groceryItems, item]);
+        } else if (category === 'todo') {
+          setTodoItems([...todoItems, item]);
+        }
+      })
+      .catch((error) => {
+        console.error('Error adding item:', error);
+      });
   };
+
+  // Optional: Fetch existing items from the backend when the app loads
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:5000/api/items') // Fetch all items from backend
+      .then((response) => {
+        const { grocery, todo } = response.data;
+        setGroceryItems(grocery);
+        setTodoItems(todo);
+      })
+      .catch((error) => console.error('Error fetching items:', error));
+  }, []);
 
   // Render UI
   return (
